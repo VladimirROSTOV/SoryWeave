@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  bio       String?   
+  createdAt DateTime @default(now())
+  stories   Story[]
+  branches  Branch[]
+  comments  Comment[]
+  votes     Vote[]
+}
+
+model Story {
+  id        Int       @id @default(autoincrement())
+  title     String
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  Int
+  branches  Branch[]
+  createdAt DateTime  @default(now())
+}
+
+model Branch {
+  id        Int       @id @default(autoincrement())
+  content   String
+  story     Story     @relation(fields: [storyId], references: [id])
+  storyId   Int
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  Int
+  votes     Vote[]
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  branchId  Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, branchId]) // чтобы один пользователь не голосовал дважды за одну ветку
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
+  // связи
+  branch   Branch   @relation(fields: [branchId], references: [id])
+  branchId Int
+
+  author   User     @relation(fields: [authorId], references: [id])
+  authorId Int
+}
+
+
