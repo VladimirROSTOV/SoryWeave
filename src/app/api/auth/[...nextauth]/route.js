@@ -23,7 +23,7 @@ export const authOptions = {
         const isValid = await compare(credentials.password, user.password)
         if (!isValid) return null
 
-        // ВАЖНО: возвращаем id
+        // возвращаем id
         return { id: user.id, name: user.name, email: user.email }
       },
     }),

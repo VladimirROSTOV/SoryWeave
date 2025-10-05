@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../auth/[...nextauth]/route"
 
-// 📖 GET /api/stories — список историй
+// GET /api/stories — список историй
 export async function GET() {
   try {
     const stories = await prisma.story.findMany({
@@ -30,7 +30,7 @@ export async function GET() {
   }
 }
 
-// ✍️ POST /api/stories — создать историю
+// POST /api/stories — создать историю
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions)

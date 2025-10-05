@@ -36,7 +36,7 @@ export default function StoryForm({ onAdd }) {
     }
   }
 
-  // 🔒 Если пользователь не вошёл, не показываем форму
+
   if (!session) {
     return (
       <p className="text-gray-500 dark:text-gray-400">

@@ -58,7 +58,7 @@ export default function HomePage() {
       })
 
       if (res.ok) {
-        // Обновляем данные после комментария
+
         fetchStories()
       } else {
         const error = await res.json()

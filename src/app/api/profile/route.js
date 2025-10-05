@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../auth/[...nextauth]/route"
 
-// GET — получить профиль
+
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
@@ -18,7 +18,7 @@ export async function GET() {
   return NextResponse.json(user)
 }
 
-// POST — обновить профиль
+
 export async function POST(req) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
