@@ -3,10 +3,21 @@ import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../auth/[...nextauth]/route"
 
-// GET /api/stories — список историй
-export async function GET() {
+// GET /api/stories — список историй + ПОИСК
+export async function GET(req) {
   try {
+    const { searchParams } = new URL(req.url)
+    const q = searchParams.get("q")?.trim() || ""
+
     const stories = await prisma.story.findMany({
+      where: q
+        ? {
+            OR: [
+              { title: { contains: q, mode: "insensitive" } },
+              { prompt: { contains: q, mode: "insensitive" } },
+            ],
+          }
+        : {},
       include: {
         author: { select: { id: true, name: true } },
         branches: {
@@ -39,7 +50,8 @@ export async function POST(req) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
     }
 
-    const { title } = await req.json()
+    const { title, prompt } = await req.json()
+
     if (!title) {
       return NextResponse.json({ error: "Missing title" }, { status: 400 })
     }
@@ -47,6 +59,7 @@ export async function POST(req) {
     const story = await prisma.story.create({
       data: {
         title,
+        prompt: prompt || null,
         authorId: session.user.id,
       },
     })

@@ -6,16 +6,25 @@ import StoryForm from "@/components/StoryForm"
 
 export default function HomePage() {
   const [stories, setStories] = useState([])
+  const [query, setQuery] = useState("")
   const { data: session } = useSession()
   const currentUserId = session?.user?.id
 
   useEffect(() => {
-    fetchStories()
-  }, [])
+    const delay = setTimeout(() => {
+      fetchStories(query)
+    }, 300) // debounce
 
-  const fetchStories = async () => {
+    return () => clearTimeout(delay)
+  }, [query])
+
+  const fetchStories = async (searchText = "") => {
     try {
-      const res = await fetch("/api/stories")
+      const url = searchText
+        ? `/api/stories?q=${encodeURIComponent(searchText)}`
+        : "/api/stories"
+
+      const res = await fetch(url)
       const data = await res.json()
       setStories(data)
     } catch (error) {
@@ -23,7 +32,6 @@ export default function HomePage() {
     }
   }
 
-  // Обработчик голосования
   const handleVote = async (branchId) => {
     try {
       const res = await fetch(`/api/branches/${branchId}/vote`, {
@@ -33,8 +41,7 @@ export default function HomePage() {
       })
 
       if (res.ok) {
-        // Обновляем данные после голосования
-        fetchStories()
+        fetchStories(query)
       } else {
         const error = await res.json()
         alert(error.error || "Ошибка при голосовании")
@@ -45,21 +52,16 @@ export default function HomePage() {
     }
   }
 
-  // Обработчик комментариев
   const handleComment = async (branchId, text) => {
     try {
       const res = await fetch(`/api/branches/${branchId}/comments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          text, 
-          userId: currentUserId 
-        }),
+        body: JSON.stringify({ text, userId: currentUserId }),
       })
 
       if (res.ok) {
-
-        fetchStories()
+        fetchStories(query)
       } else {
         const error = await res.json()
         alert(error.error || "Ошибка при добавлении комментария")
@@ -72,7 +74,17 @@ export default function HomePage() {
 
   return (
     <main className="container mx-auto p-6">
+
       <h1 className="text-3xl font-bold mb-6">📖 Истории</h1>
+
+      {/* Поле поиска */}
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Поиск историй..."
+        className="w-full p-1 border rounded-lg mb-6 dark:bg-gray-900 dark:border-gray-700"
+      />
 
       {session ? (
         <StoryForm onAdd={(s) => setStories([s, ...stories])} />

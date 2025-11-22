@@ -10,14 +10,18 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  password  String
+  password  String?  // делаем опциональным для GitHub users
   name      String?
-  bio       String?   
+  bio       String?
+  githubId  String?  @unique // добавляем для GitHub OAuth
+  avatar    String?  // добавляем для аватара из GitHub
   createdAt DateTime @default(now())
   stories   Story[]
   branches  Branch[]
   comments  Comment[]
   votes     Vote[]
+
+  @@map("users")
 }
 
 model Story {
@@ -28,6 +32,8 @@ model Story {
   authorId  Int
   branches  Branch[]
   createdAt DateTime  @default(now())
+
+  @@map("stories")
 }
 
 model Branch {
@@ -40,6 +46,8 @@ model Branch {
   votes     Vote[]
   comments  Comment[]
   createdAt DateTime  @default(now())
+
+  @@map("branches")
 }
 
 model Vote {
@@ -50,20 +58,18 @@ model Vote {
   branchId  Int
   createdAt DateTime @default(now())
 
-  @@unique([userId, branchId]) // чтобы один пользователь не голосовал дважды за одну ветку
+  @@unique([userId, branchId])
+  @@map("votes")
 }
 
 model Comment {
   id        Int      @id @default(autoincrement())
   content   String
   createdAt DateTime @default(now())
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  branchId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
 
-  // связи
-  branch   Branch   @relation(fields: [branchId], references: [id])
-  branchId Int
-
-  author   User     @relation(fields: [authorId], references: [id])
-  authorId Int
+  @@map("comments")
 }
-
-
