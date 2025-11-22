@@ -23,6 +23,7 @@ model User {
 model Story {
   id        Int       @id @default(autoincrement())
   title     String
+  prompt    String?
   author    User      @relation(fields: [authorId], references: [id])
   authorId  Int
   branches  Branch[]
