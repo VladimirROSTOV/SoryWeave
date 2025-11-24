@@ -1,6 +1,6 @@
 "use client"
 
-import Comments from "./Comments" // ✅ Правильный импорт
+import Comments from "./Comments" 
 
 export default function BranchCard({ branch, session, onVote, onComment }) {
   return (

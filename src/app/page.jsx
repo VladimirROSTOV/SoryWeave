@@ -13,7 +13,7 @@ export default function HomePage() {
   useEffect(() => {
     const delay = setTimeout(() => {
       fetchStories(query)
-    }, 300) // debounce
+    }, 300) 
 
     return () => clearTimeout(delay)
   }, [query])
@@ -83,7 +83,7 @@ export default function HomePage() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Поиск историй..."
-        className="w-full p-1 border rounded-lg mb-6 dark:bg-gray-900 dark:border-gray-700"
+        className="s-full p-2 border rounded-lg mb-7 light:bg-gray-400 dark:border-gray-400"
       />
 
       {session ? (

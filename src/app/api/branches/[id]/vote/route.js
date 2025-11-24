@@ -3,19 +3,19 @@ import prisma from "@/lib/prisma"
 
 export async function POST(req, context) {
   try {
-    const { id } = await context.params // ✅ ждём params
+    const { id } = await context.params 
     const { userId } = await req.json()
 
     if (!userId) {
       return NextResponse.json({ error: "Missing userId" }, { status: 400 })
     }
 
-    // Проверка — уже голосовал?
+
     const existingVote = await prisma.vote.findUnique({
       where: {
         userId_branchId: {
           userId: Number(userId),
-          branchId: Number(id), // ✅ приводим к Int
+          branchId: Number(id), 
         },
       },
     })
@@ -27,7 +27,7 @@ export async function POST(req, context) {
     const vote = await prisma.vote.create({
       data: {
         userId: Number(userId),
-        branchId: Number(id), // ✅ приводим к Int
+        branchId: Number(id), 
       },
     })
 
